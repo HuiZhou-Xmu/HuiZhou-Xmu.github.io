@@ -95,12 +95,12 @@
 <meta property="og:site_name" content="PigTS&#39;s Blog">
 <meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;一、C/S架构 &amp;#160; &amp;#160; &amp;#160; &amp;#160;C/S 架构是一种典型的两层架构，全称是Client/Server，即客户端/服务器端架构，其客户端包含一个或多个在用户的电脑上运行的程序，而服务器端有两种，一种是数据库服务器端，客户端通过数据库连接访问服务器端的数据；另一种是Socket服务器端，服务器端的程序通过Sock">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://on5axdai5.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170407101040.png">
-<meta property="og:updated_time" content="2017-04-07T03:03:58.248Z">
+<meta property="og:image" content="https://github.com/PigTS/PigTS.github.io/raw/master/blog_imgs/QQ%E5%9B%BE%E7%89%8720170407101040.png">
+<meta property="og:updated_time" content="2019-08-20T03:47:53.103Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="浅析C&#x2F;S、B&#x2F;S与P2P架构">
 <meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;一、C/S架构 &amp;#160; &amp;#160; &amp;#160; &amp;#160;C/S 架构是一种典型的两层架构，全称是Client/Server，即客户端/服务器端架构，其客户端包含一个或多个在用户的电脑上运行的程序，而服务器端有两种，一种是数据库服务器端，客户端通过数据库连接访问服务器端的数据；另一种是Socket服务器端，服务器端的程序通过Sock">
-<meta name="twitter:image" content="http://on5axdai5.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170407101040.png">
+<meta name="twitter:image" content="https://github.com/PigTS/PigTS.github.io/raw/master/blog_imgs/QQ%E5%9B%BE%E7%89%8720170407101040.png">
 
 
 
@@ -392,7 +392,7 @@
 <p>&#160; &#160; &#160; &#160;<strong>四、杂谈：通过Socket通信看TCP与UDP的面向连接/面向非连接</strong></p>
 <p>&#160; &#160; &#160; &#160;Socket通信采用了TCP/IP协议，在TCP/IP网络应用中，通信的两个进程间相互作用的主要模式是客户端/服务器端模式，即客户端向服务器端发出服务请求，服务器端接收到请求后，提供相应服务。客户端/服务器端模式的建立基于以下两点：首先，建立网络的起因是网络中软硬件资源、运算能力和信息不均等，需要共享，从而造就拥有众多资源的主机提供服务，资源较少的客户端请求服务这一非对等作用。其次，网间进程通信完全是异步的，相互通信的进程间既不存在父子关系，又不共享内存缓冲区，因此需要一种机制为希望通信的进程间建立关系，为二者的数据交换提供同步，这就是基于客户端/服务器端模式的TCP/IP。</p>
 <p>&#160; &#160; &#160; &#160;Socket的通信过程如下图所示：</p>
-<p>&#160; &#160; &#160; &#160;<img src="http://on5axdai5.bkt.clouddn.com/QQ%E5%9B%BE%E7%89%8720170407101040.png" alt="image"></p>
+<p>&#160; &#160; &#160; &#160;<img src="https://github.com/PigTS/PigTS.github.io/raw/master/blog_imgs/QQ%E5%9B%BE%E7%89%8720170407101040.png" alt="image"></p>
 <p>&#160; &#160; &#160; &#160;Socket通信是基于TCP/IP通信协议进行通信的，TCP是面向连接的，所谓的面向连接是指在正式通信之前必须要与对方建立起连接。比如你给别人打电话，必须等线路接通了，对方拿起话筒才能相互通话。</p>
 <p>&#160; &#160; &#160; &#160;所以基于TCP/IP协议的Socket通信在上图中客户端有connect()请求连接，服务器端有listen()监听端口和accept()接受连接。如果是UDP协议，那么就不会有connet()，listen()，accept()这三个步骤了，因为UDP协议是面向非连接的，面向非连接是指在正式通信前不必与对方先建立连接，不管对方状态就直接发送。这与手机短信非常相似，在发短信的时候，只需要输入对方手机号就可以了，其他就不用去管了。</p>
 

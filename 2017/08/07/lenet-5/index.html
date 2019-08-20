@@ -95,12 +95,12 @@
 <meta property="og:site_name" content="PigTS&#39;s Blog">
 <meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文先分析了LeNet-5模型的结构，然后基于LeNet-5模型写了TensorFlow代码实现mnist数字识别，代码部分进行了详细注解，目前也在学习阶段，有错误欢迎指出，大家一起学习。">
 <meta property="og:locale" content="zh-Hans">
-<meta property="og:image" content="http://on5axdai5.bkt.clouddn.com/LeNet-5.jpg">
-<meta property="og:updated_time" content="2017-08-07T10:17:06.542Z">
+<meta property="og:image" content="https://github.com/PigTS/PigTS.github.io/raw/master/blog_imgs/LeNet-5.jpg">
+<meta property="og:updated_time" content="2019-08-20T04:00:37.605Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="LeNet-5模型详解及其TensorFlow代码实现">
 <meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文先分析了LeNet-5模型的结构，然后基于LeNet-5模型写了TensorFlow代码实现mnist数字识别，代码部分进行了详细注解，目前也在学习阶段，有错误欢迎指出，大家一起学习。">
-<meta name="twitter:image" content="http://on5axdai5.bkt.clouddn.com/LeNet-5.jpg">
+<meta name="twitter:image" content="https://github.com/PigTS/PigTS.github.io/raw/master/blog_imgs/LeNet-5.jpg">
 
 
 
@@ -379,7 +379,7 @@
       
         <p>&#160; &#160; &#160; &#160;本文先分析了LeNet-5模型的结构，然后基于LeNet-5模型写了TensorFlow代码实现mnist数字识别，代码部分进行了详细注解，目前也在学习阶段，有错误欢迎指出，大家一起学习。<a id="more"></a></p>
 <p>&#160; &#160; &#160; &#160;LeNet-5模型结构图如下图：</p>
-<p>&#160; &#160; &#160; &#160;<img src="http://on5axdai5.bkt.clouddn.com/LeNet-5.jpg" alt="image"></p>
+<p>&#160; &#160; &#160; &#160;<img src="https://github.com/PigTS/PigTS.github.io/raw/master/blog_imgs/LeNet-5.jpg" alt="image"></p>
 <p>&#160; &#160; &#160; &#160;LeNet-5模型总共有7层。</p>
 <p>&#160; &#160; &#160; &#160;<strong>第一层：卷积层</strong></p>
 <p>&#160; &#160; &#160; &#160;第一层卷积层的输入为原始的图像，原始图像的尺寸为32×32×1。卷积层的过滤器尺寸为5×5，深度为6，不使用全0补充，步长为1。由于没有使用全0补充，所以这一层的输出的尺寸为32-5+1=28，深度为6。这一个卷积层总共有5×5×1×6+6=156个参数，其中6为偏置项参数个数，卷积层的参数个数只和过滤器的尺寸，深度以及当前层节点矩阵的深度有关。因为下一层节点矩阵有28×28×6=4704个节点，每个节点和5×5=25个当前层节点相连，所以本层卷积层总共有4704×(25+1)=122304个连接。</p>

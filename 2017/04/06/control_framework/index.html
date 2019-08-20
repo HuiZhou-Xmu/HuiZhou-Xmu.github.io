@@ -1,0 +1,756 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="设计模式,内部类,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;应用程序框架（application framework）是被设计用来解决某类特定问题的一个类或一组类。要运用某个应用程序框架，通常是继承一个或多个类，并覆盖某些方法。在覆盖后的方法中，编写代码定制应用程序提供的通用解决方案，以解决你的特定问题。模板方法包含算法的基本结构，并且会调用一个或多个可覆盖的方法，以完成算法的动作。设计模式总是将变化的">
+<meta name="keywords" content="设计模式,内部类">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Java内部类实例：控制框架（e.g.温室控制系统）">
+<meta property="og:url" content="http://flowstay.duoshuo.com/2017/04/06/control_framework/index.html">
+<meta property="og:site_name" content="PigTS&#39;s Blog">
+<meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;应用程序框架（application framework）是被设计用来解决某类特定问题的一个类或一组类。要运用某个应用程序框架，通常是继承一个或多个类，并覆盖某些方法。在覆盖后的方法中，编写代码定制应用程序提供的通用解决方案，以解决你的特定问题。模板方法包含算法的基本结构，并且会调用一个或多个可覆盖的方法，以完成算法的动作。设计模式总是将变化的">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-04-06T09:55:17.137Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="Java内部类实例：控制框架（e.g.温室控制系统）">
+<meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;应用程序框架（application framework）是被设计用来解决某类特定问题的一个类或一组类。要运用某个应用程序框架，通常是继承一个或多个类，并覆盖某些方法。在覆盖后的方法中，编写代码定制应用程序提供的通用解决方案，以解决你的特定问题。模板方法包含算法的基本结构，并且会调用一个或多个可覆盖的方法，以完成算法的动作。设计模式总是将变化的">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://flowstay.duoshuo.com/2017/04/06/control_framework/">
+
+
+
+
+
+  <title> Java内部类实例：控制框架（e.g.温室控制系统） | PigTS's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b8e6b42ae3e40b727ec4ce6ea21e51d2";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PigTS's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Record Learning</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://flowstay.duoshuo.com/2017/04/06/control_framework/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="PigTS">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/yuanshi.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PigTS's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                Java内部类实例：控制框架（e.g.温室控制系统）
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-04-06T17:26:17+08:00">
+                2017-04-06
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/《Thinging-in-Java》/" itemprop="url" rel="index">
+                    <span itemprop="name">《Thinging in Java》</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/04/06/control_framework/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/04/06/control_framework/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&#160; &#160; &#160; &#160;应用程序框架（application framework）是被设计用来解决某类特定问题的一个类或一组类。要运用某个应用程序框架，通常是继承一个或多个类，并覆盖某些方法。在覆盖后的方法中，编写代码定制应用程序提供的通用解决方案，以解决你的特定问题。模板方法包含算法的基本结构，并且会调用一个或多个可覆盖的方法，以完成算法的动作。<strong>设计模式总是将变化的事物与保持不变的事物分离开，在这个模式中，模板方法是保持不变的事物，而可覆盖的方法就是变化的事物。</strong><a id="more"></a> </p>
+<p>&#160; &#160; &#160; &#160;控制框架（control framework）是一类特殊的应用程序框架，它用来解决相应事件的需求。主要用来响应事件的系统被称作事件驱动系统。</p>
+<p>&#160; &#160; &#160; &#160;在本文中，保持不变的事物即模版方法是控制框架，变化的事物即可覆盖的方法是温室控制系统。</p>
+<p>&#160; &#160; &#160; &#160;<strong>一、控制框架模版</strong></p>
+<p>&#160; &#160; &#160; &#160;我们首先需要定义一个事件（Event）文件，事件文件中主要包含事件的”就绪”状态，以判断什么时候开始执行相对应的动作，但是动作我们写成抽象（abstract）方法即可，让子类去具体实现其方法。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">package content.ch10;</span><br><span class="line"></span><br><span class="line">public abstract class Event &#123;</span><br><span class="line">	private long eventTime;</span><br><span class="line">	protected final long delayTime;</span><br><span class="line"></span><br><span class="line">	public Event(long delayTime) &#123;</span><br><span class="line">		this.delayTime = delayTime;</span><br><span class="line">		start();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void start() &#123;</span><br><span class="line">		eventTime = System.nanoTime() + delayTime;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public boolean ready() &#123;</span><br><span class="line">		return System.nanoTime() &gt;= eventTime;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public abstract void action();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;上述事件代码依据构造函数中的延迟时间（delayTime）变量来决定什么时候触发事件，start()是一个独立的方法，而没有包含在构造器内，因为这样就可以在事件运行以后重新启动计时器，也就是能够重复使用Event对象。例如，如果想要重复一个事件，只需简单地在action()中调用start()方法。ready()告诉你何时能够运行action()方法，当然，也可以在导出类中覆盖ready()方法，使得Event能够基于时间之外的其他因素而触发。</p>
+<p>&#160; &#160; &#160; &#160;接下来，我们需要写我们的事件的控制器（实际控制框架），以用来管理并触发事件的发生。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">package content.ch10;</span><br><span class="line"></span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.List;</span><br><span class="line"></span><br><span class="line">public class Controller &#123;</span><br><span class="line">	private List&lt;Event&gt; eventList = new ArrayList&lt;Event&gt;();</span><br><span class="line"></span><br><span class="line">	public void addEvent(Event c) &#123;</span><br><span class="line">		eventList.add(c);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public void run() &#123;</span><br><span class="line">		while (eventList.size() &gt; 0) &#123;</span><br><span class="line">			// Make a copy so you&apos;re not modifying the list</span><br><span class="line">			// while you&apos;re selecting the elements in it.</span><br><span class="line">			for (Event e : new ArrayList&lt;Event&gt;(eventList)) &#123;</span><br><span class="line">				if (e.ready()) &#123;</span><br><span class="line">					System.out.println(e);</span><br><span class="line">					e.action();</span><br><span class="line">					eventList.remove(e);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	/////////////////////////// Backup///////////////////////////////</span><br><span class="line">	public void run_V1() &#123;</span><br><span class="line">		while (eventList.size() &gt; 0) &#123;</span><br><span class="line">			// 如果不做eventList的备份，eventList.get(0)之后，remove(0)操作后，</span><br><span class="line">			// 原来的索引1移到索引0处，原来的索引2移到索引1处，那么第二次循环取索引1的操作，</span><br><span class="line">			// 会变成取原来的索引2，即跳过了真正的索引1。即选择其中的元素后，还要进行删除操作，</span><br><span class="line">			// 会影响第二次取值，所以需要进行一个备份。</span><br><span class="line">			for (int i = 0; i &lt; eventList.size(); i++) &#123;</span><br><span class="line">				if (eventList.get(i).ready()) &#123;</span><br><span class="line">					System.out.println(eventList.get(i));</span><br><span class="line">					eventList.get(i).action();</span><br><span class="line">					eventList.remove(i);</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;上述中事件的列表要做备份，Backup后面已经解释清楚了原因。</p>
+<p>&#160; &#160; &#160; &#160;run()方法循环遍历eventList，寻找就绪的(ready())、要运行的Event对象。对找到的每一个就绪的(ready())事件，使用对象的toString()打印其信息，调用其action()方法，然后从队列中移除此Event。</p>
+<p>&#160; &#160; &#160; &#160;在目前的设计中，我们只是把控制框架写好了，包括事件(Event)和控制器(Controller),但你并不知道Event到底做了什么，这正是此设计的关键所在，“使变化的事物与不变的事物分离”。“变化的事物”就是各种不同的Event对象所具有的不同行为，而你可以通过创建不同的Event子类来表示不同的行为。</p>
+<p>&#160; &#160; &#160; &#160;而这正是内部类擅长之处，内部类允许：</p>
+<p>&#160; &#160; &#160; &#160;(1).控制框架的完整实现是由单个的类创建的，从而使得实现的细节被封装了起来。内部类用来表示解决问题所必需的各种不同的action()。</p>
+<p>&#160; &#160; &#160; &#160;(2).内部类能够很容易地访问外围类的任意成员，所以可以避免这种实现变得笨拙。</p>
+<p>&#160; &#160; &#160; &#160;<strong>二、温室控制系统</strong></p>
+<p>&#160; &#160; &#160; &#160;通过此控制框架的一个特定实现：温室控制系统，来说明内部类的具体作用。</p>
+<p>&#160; &#160; &#160; &#160;此温室控制系统可以控制温室的运作，比如：控制灯光、水、温度调节器的开关，以及响铃和重新启动系统，每个行为都是完全不同的。控制框架的设计使得分离这些不同的代码变得非常容易，使用内部类，可以在单一的类里面产生对同一个基类Event的多种导出版本。对温室系统的每一种行为，都继承一个新的Event内部类，并在要实现的action()中编写控制代码。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br></pre></td><td class="code"><pre><span class="line">package content.ch10;</span><br><span class="line"></span><br><span class="line">public class GreenhouseControls extends Controller &#123;</span><br><span class="line">	private boolean light = false;</span><br><span class="line"></span><br><span class="line">	public class LightOn extends Event &#123;</span><br><span class="line">		public LightOn(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			// Put hardware control code here to</span><br><span class="line">			// physically turn on the light.</span><br><span class="line">			light = true;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Light is on&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public class LightOff extends Event &#123;</span><br><span class="line">		public LightOff(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			// Put hardware control code here to</span><br><span class="line">			// physically turn off the light.</span><br><span class="line">			light = false;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Light is off&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private boolean water = false;</span><br><span class="line"></span><br><span class="line">	public class WaterOn extends Event &#123;</span><br><span class="line">		public WaterOn(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			// Put hardware control code here</span><br><span class="line">			water = true;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Greenhouse water is on&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public class WaterOff extends Event &#123;</span><br><span class="line">		public WaterOff(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			// Put hardware control code here</span><br><span class="line">			water = false;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Greenhouse water is off&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	private String thermostat = &quot;Day&quot;;</span><br><span class="line"></span><br><span class="line">	public class ThermostatNight extends Event &#123;</span><br><span class="line">		public ThermostatNight(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			// Put hardware control code here.</span><br><span class="line">			thermostat = &quot;Night&quot;;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Thermostat on night setting&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public class ThermostatDay extends Event &#123;</span><br><span class="line">		public ThermostatDay(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			// Put hardware control code here.</span><br><span class="line">			thermostat = &quot;Day&quot;;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Thermostat on day setting&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	// An example of an action() that inserts a</span><br><span class="line">	// new one of itself into the event list.</span><br><span class="line">	public class Bell extends Event &#123;</span><br><span class="line">		public Bell(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			addEvent(new Bell(delayTime));</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Bing!&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public class Restart extends Event &#123;</span><br><span class="line">		private Event[] eventList;</span><br><span class="line"></span><br><span class="line">		public Restart(long delayTime, Event[] eventList) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">			this.eventList = eventList;</span><br><span class="line">			for (Event e : eventList) &#123;</span><br><span class="line">				addEvent(e);</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			for (Event e : eventList) &#123;</span><br><span class="line">				e.start(); // Rerun each event</span><br><span class="line">				addEvent(e);</span><br><span class="line">			&#125;</span><br><span class="line">			start(); // Rerun this Event</span><br><span class="line">			addEvent(this);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Restarting system&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static class Terminate extends Event &#123;</span><br><span class="line">		public Terminate(long delayTime) &#123;</span><br><span class="line">			super(delayTime);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public void action() &#123;</span><br><span class="line">			System.exit(0);</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">		public String toString() &#123;</span><br><span class="line">			return &quot;Terminating&quot;;</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;在实际中，可以在action()中加入相对应的硬件控制代码来实际上控制相应的物理行为。</p>
+<p>&#160; &#160; &#160; &#160;最后，我们需要配置该温室控制系统，通过添加各种不同的Event对象来进行配置。代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">package content.ch10;</span><br><span class="line"></span><br><span class="line">public class GreenhouseController &#123;</span><br><span class="line">	public static void main(String[] args) &#123;</span><br><span class="line">		GreenhouseControls gc = new GreenhouseControls();</span><br><span class="line">		//Instead of hard-wiring,you could parse </span><br><span class="line">		//configution information from text file here.</span><br><span class="line">		gc.addEvent(gc.new Bell(900));</span><br><span class="line">		Event[] eventList = &#123;</span><br><span class="line">				gc.new ThermostatNight(0),</span><br><span class="line">				gc.new LightOn(200),</span><br><span class="line">				gc.new LightOff(400),</span><br><span class="line">				gc.new WaterOn(600),</span><br><span class="line">				gc.new WaterOff(800),</span><br><span class="line">				gc.new ThermostatDay(1400)</span><br><span class="line">		&#125;;</span><br><span class="line">		gc.addEvent(gc.new Restart(2000,eventList));</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		/* // 从命令行接受输入</span><br><span class="line">		 if(args.length == 1)&#123;</span><br><span class="line">			gc.addEvent(new GreenhouseControls.Terminate(new Integer(args[0])));</span><br><span class="line">		&#125;*/</span><br><span class="line">		</span><br><span class="line">		gc.addEvent(new GreenhouseControls.Terminate(new Integer(100)));</span><br><span class="line">		gc.run();</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;这个类的作用是初始化系统，它添加了所有的相应的事件。Restart事件反复运行，而且它每次都会将eventList加载到GreenhouseControls对象中。如果提供了命令行参数，系统会以它作为毫秒数，决定什么时候终止程序。运行该程序结果如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">Bing!</span><br><span class="line">Thermostat on night setting</span><br><span class="line">Light is on</span><br><span class="line">Light is off</span><br><span class="line">Greenhouse water is on</span><br><span class="line">Greenhouse water is off</span><br><span class="line">Thermostat on day setting</span><br><span class="line">Restarting system</span><br><span class="line">Terminating</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;至此，我们应该能很清楚的意识到内部类的实际作用，内部类很像多重继承，比如：Bell和Restart拥有Event的所有方法，并且似乎也拥有外围类GreenhouseControls的所有方法。使用内部类，我们可以很优雅的实现温室控制系统，通过模板(不变的事物)—控制框架,具体实现(变化的事物)—温室控制系统，我们很好的实现了温室控制系统的功能，并且当我们后期想要加一些功能，比如：加一个打开、关闭风扇的功能，我们只需在GreenhouseControls.java中增加两个控制风扇打开、关闭的内部类即可，然后在GreenhouseController.java中配置以使用新加的Event对象即可，对于控制框架模板完全不需要修改任何地方。</p>
+<p>&#160; &#160; &#160; &#160;来自：《Java编程思想》第十章 内部类与控制框架</p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/设计模式/" rel="tag"># 设计模式</a>
+          
+            <a href="/tags/内部类/" rel="tag"># 内部类</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/21/lite-struts-tdd/" rel="next" title="TDD设计模式写一个lite-struts框架">
+                <i class="fa fa-chevron-left"></i> TDD设计模式写一个lite-struts框架
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/07/communication_architecture/" rel="prev" title="浅析C/S、B/S与P2P架构">
+                浅析C/S、B/S与P2P架构 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/04/06/control_framework/" data-title="Java内部类实例：控制框架（e.g.温室控制系统）" data-url="http://flowstay.duoshuo.com/2017/04/06/control_framework/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/yuanshi.jpg" alt="PigTS">
+          <p class="site-author-name" itemprop="name">PigTS</p>
+           
+              <p class="site-description motion-element" itemprop="description">I was enchanted to meet you</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PigTS</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"flowstay"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

@@ -1,0 +1,815 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="TDD设计模式,struts,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文通过TDD设计模式实现一个简易的struts框架。 &amp;#160; &amp;#160; &amp;#160; &amp;#160;一. 什么是TDD设计模式？ &amp;#160; &amp;#160; &amp;#160; &amp;#160;TDD是测试驱动开发（Test-Driven Development）的英文简称，是敏捷开发中的一项核心实践和技术，也是一种设计方法论。TDD的原理是在">
+<meta name="keywords" content="TDD设计模式,struts">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TDD设计模式写一个lite-struts框架">
+<meta property="og:url" content="http://flowstay.duoshuo.com/2017/03/21/lite-struts-tdd/index.html">
+<meta property="og:site_name" content="PigTS&#39;s Blog">
+<meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文通过TDD设计模式实现一个简易的struts框架。 &amp;#160; &amp;#160; &amp;#160; &amp;#160;一. 什么是TDD设计模式？ &amp;#160; &amp;#160; &amp;#160; &amp;#160;TDD是测试驱动开发（Test-Driven Development）的英文简称，是敏捷开发中的一项核心实践和技术，也是一种设计方法论。TDD的原理是在">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:image" content="http://on5axdai5.bkt.clouddn.com/clipboard.png">
+<meta property="og:updated_time" content="2017-04-05T05:01:46.931Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TDD设计模式写一个lite-struts框架">
+<meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文通过TDD设计模式实现一个简易的struts框架。 &amp;#160; &amp;#160; &amp;#160; &amp;#160;一. 什么是TDD设计模式？ &amp;#160; &amp;#160; &amp;#160; &amp;#160;TDD是测试驱动开发（Test-Driven Development）的英文简称，是敏捷开发中的一项核心实践和技术，也是一种设计方法论。TDD的原理是在">
+<meta name="twitter:image" content="http://on5axdai5.bkt.clouddn.com/clipboard.png">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://flowstay.duoshuo.com/2017/03/21/lite-struts-tdd/">
+
+
+
+
+
+  <title> TDD设计模式写一个lite-struts框架 | PigTS's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b8e6b42ae3e40b727ec4ce6ea21e51d2";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PigTS's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Record Learning</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://flowstay.duoshuo.com/2017/03/21/lite-struts-tdd/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="PigTS">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/yuanshi.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PigTS's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                TDD设计模式写一个lite-struts框架
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-03-21T23:00:49+08:00">
+                2017-03-21
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/lite-struts-tdd/" itemprop="url" rel="index">
+                    <span itemprop="name">lite-struts-tdd</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/03/21/lite-struts-tdd/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/03/21/lite-struts-tdd/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&#160; &#160; &#160; &#160;本文通过TDD设计模式实现一个简易的struts框架。</p>
+<p>&#160; &#160; &#160; &#160;<strong>一. 什么是TDD设计模式？</strong></p>
+<p>&#160; &#160; &#160; &#160;TDD是测试驱动开发（Test-Driven Development）的英文简称，是敏捷开发中的一项核心实践和技术，也是一种设计方法论。TDD的原理是在开发功能代码之前，先编写单元测试用例代码，测试代码确定需要编写什么产品代码。TDD虽是敏捷方法的核心实践，但不只适用于XP（Extreme Programming），同样可以适用于其他开发方法和过程。<a id="more"></a> </p>
+<p>&#160; &#160; &#160; &#160;TDD的基本思路就是通过测试来推动整个开发的进行，它以不断的测试推动代码的开发，既简化了代码，又保证了软件质量，测试驱动开发技术并不只是单纯的测试工作。</p>
+<p>&#160; &#160; &#160; &#160;<strong>二.设计需求</strong> </p>
+<p>&#160; &#160; &#160; &#160;本文设计了一个lite-struts，主要功能为在网页登陆界面（login），输入用户名（name）及密码（password），如果与后台预设的用户名（name）和密码（password）一致，则返回成功的信息（success），并打开相应的页面（成功情况下的jsp）；如果失败，则返回失败的信息（fail），并打开相应的页面（失败情况下的jsp）。在网页登出界面（logout），与登陆界面思想一样，分为成功（success）和错误（error）两种响应，并打开相对应的界面。</p>
+<p>&#160; &#160; &#160; &#160;具体的功能需求如下struts.xml文件所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="line">&lt;struts&gt;</span><br><span class="line">    &lt;action name=&quot;login&quot; class=&quot;com.coderising.litestruts.LoginAction&quot;&gt;</span><br><span class="line">        &lt;result name=&quot;success&quot;&gt;/jsp/homepage.jsp&lt;/result&gt;</span><br><span class="line">        &lt;result name=&quot;fail&quot;&gt;/jsp/showLogin.jsp&lt;/result&gt;</span><br><span class="line">    &lt;/action&gt;</span><br><span class="line">    &lt;action name=&quot;logout&quot; class=&quot;com.coderising.litestruts.LogoutAction&quot;&gt;</span><br><span class="line">    	&lt;result name=&quot;success&quot;&gt;/jsp/welcome.jsp&lt;/result&gt;</span><br><span class="line">    	&lt;result name=&quot;error&quot;&gt;/jsp/error.jsp&lt;/result&gt;</span><br><span class="line">    &lt;/action&gt;</span><br><span class="line">&lt;/struts&gt;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;<strong>三.设计思路</strong></p>
+<p>&#160; &#160; &#160; &#160;采用先写测试用例再写主要功能代码的TDD模式进行驱动设计，本文主要分析登陆的代码设计，登出的思想和登陆一样，就不赘述。</p>
+<p>&#160; &#160; &#160; &#160;整体设计思路如下：</p>
+<ul>
+<li>第一步：解析xml。</li>
+<li>第二步：根据action的name确定对应的class。</li>
+<li>第三步：通过反射获取所有的set方法，并调用set方法将相应的name和password存入到Map中（key-value对，name=？，password=？，即登陆时输入的name和password）。</li>
+<li>第四步：调用方法（本文中为exeute方法）确定name和password是否正确，正确返回信息success，错误则返回信息fail。</li>
+<li>第五步：通过反射获取所有的get方法，反射调用并把值和属性形成一个HashMap，例如：{“name”,”test”},{“password”,”123456”}{“message”,”login successful.”}(如果name和password均正确，则会得到message为login  successful.)，并存入到视图文件（本文为类View）的Map数据段中（本文为parameters）。</li>
+<li>第六步：通过action的name以及第四步返回的提示信息(success/fail)进行判断，确定相对应的jsp页面，并存储到视图文件的jsp中。</li>
+<li>第七步：返回View。即通过传入的actionName以及存有name和password的值的parameters（Map类型），从第一步到第六步确定了相应的视图View，最后返回得到相应的试图View，视图View中主要存有jsp和相应的message提示（本文用到这两项进行junit测试）。</li>
+</ul>
+<p>&#160; &#160; &#160; &#160;<strong>1.第一个测试用例：统揽全局，上帝视角分析核心需求。</strong></p>
+<p>&#160; &#160; &#160; &#160;当我们进入登陆界面时，传入的是login，此时需要输入name和password以验证登陆，如果均正确，则打开成功的jsp页面，并提示成功；如果验证失败，则提示失败并留在登陆界面以继续输入name和password。核心测试代码如下，该测试若能通过，则我们的任务就全部完成了。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">import org.junit.Assert;</span><br><span class="line">import org.junit.Test;</span><br><span class="line"></span><br><span class="line">public class StrutsTest &#123;</span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	public void testLoginActionSuccess() &#123;</span><br><span class="line">		</span><br><span class="line">		String actionName = &quot;login&quot;;</span><br><span class="line">        </span><br><span class="line">		Map&lt;String,String&gt; params = new HashMap&lt;String,String&gt;();</span><br><span class="line">                params.put(&quot;name&quot;,&quot;test&quot;);</span><br><span class="line">                params.put(&quot;password&quot;,&quot;1234&quot;);</span><br><span class="line">        </span><br><span class="line">                View view  = Struts.runAction(actionName,params);        </span><br><span class="line">        </span><br><span class="line">                Assert.assertEquals(&quot;/jsp/homepage.jsp&quot;, view.getJsp());</span><br><span class="line">                Assert.assertEquals(&quot;login successful&quot;, view.getParameters().get(&quot;message&quot;));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	public void testLoginActionFailed() &#123;</span><br><span class="line">		String actionName = &quot;login&quot;;</span><br><span class="line">		Map&lt;String,String&gt; params = new HashMap&lt;String,String&gt;();</span><br><span class="line">                params.put(&quot;name&quot;,&quot;test&quot;);</span><br><span class="line">                params.put(&quot;password&quot;,&quot;123456&quot;); //密码和预设的不一致</span><br><span class="line">        </span><br><span class="line">                View view  = Struts.runAction(actionName,params);        </span><br><span class="line">        </span><br><span class="line">                Assert.assertEquals(&quot;/jsp/showLogin.jsp&quot;, view.getJsp());</span><br><span class="line">                Assert.assertEquals(&quot;login failed,please check your user/pwd&quot;, view.getParameters().get(&quot;message&quot;));</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;此时类Struts和类View以及这两个类下有一些方法出现了红线提示错误，这时我们采用IDE自动补全代码的方式创建这两个类以及相应的方法。</p>
+<p>&#160; &#160; &#160; &#160;先写核心类struts.java，我们所有的各模块核心功能代码都会在这个类中组装以完成我们最终的lite-struts。类struts骨架代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">public class Struts &#123;</span><br><span class="line"></span><br><span class="line">    public static View runAction(String actionName, Map&lt;String,String&gt; parameters) &#123;</span><br><span class="line"></span><br><span class="line">    	return null;</span><br><span class="line">    &#125;    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;核心骨架代码很简单，runAction方法中第一个参数为传入一个actionName字符串以判断action是login还是logout，我们这主要测试login，logout类似处理。第二个参数采用Map传入name和password以验证正确性，最后返回对应的View视图。这个骨架一目了然，我们先把它放在这里不用管，后面通过一步步TDD设计逼近最终功能，最后再来补全核心代码。</p>
+<p>&#160; &#160; &#160; &#160;我们还需要一个视图文件，以返回正确的对应视图。相关代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">public class View &#123;</span><br><span class="line">	private String jsp;</span><br><span class="line">	private Map parameters;</span><br><span class="line">	</span><br><span class="line">	public String getJsp() &#123;</span><br><span class="line">		return jsp;</span><br><span class="line">	&#125;</span><br><span class="line">	public View setJsp(String jsp) &#123;</span><br><span class="line">		this.jsp = jsp;</span><br><span class="line">		return this;</span><br><span class="line">	&#125;</span><br><span class="line">	public Map getParameters() &#123;</span><br><span class="line">		return parameters;</span><br><span class="line">	&#125;</span><br><span class="line">	public View setParameters(Map parameters) &#123;</span><br><span class="line">		this.parameters = parameters;</span><br><span class="line">		return this;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;我们这里还需要一个登陆文件以用来设置和获取name和password，以及验证name和password正确性的方法（在此登陆文件中设置好了正确的name和password），以用来提供success或fail的提示信息。相关代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">public class LoginAction&#123;</span><br><span class="line">    private String name ;</span><br><span class="line">    private String password;</span><br><span class="line">    private String message;</span><br><span class="line"></span><br><span class="line">    public String getName() &#123;</span><br><span class="line">        return name;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String getPassword() &#123;</span><br><span class="line">        return password;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public String execute()&#123;</span><br><span class="line">            if(&quot;test&quot;.equals(name) &amp;&amp; &quot;1234&quot;.equals(password))&#123;</span><br><span class="line">                this.message = &quot;login successful&quot;;</span><br><span class="line">                return &quot;success&quot;;</span><br><span class="line">            &#125;</span><br><span class="line">            this.message = &quot;login failed,please check your user/pwd&quot;;</span><br><span class="line">            return &quot;fail&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public void setName(String name)&#123;</span><br><span class="line">        this.name = name;</span><br><span class="line">    &#125;</span><br><span class="line">    public void setPassword(String password)&#123;</span><br><span class="line">        this.password = password;</span><br><span class="line">    &#125;</span><br><span class="line">    public String getMessage()&#123;</span><br><span class="line">        return this.message;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;<strong>2.第二个测试用例：解析xml，获取xml到java的反射。</strong></p>
+<p>&#160; &#160; &#160; &#160;首先，我们需要解析xml文件，并通过传入的action的name是login还是logout来获取相应的class文件。我们的思想是先把xml文件传入一个配置文件（此处用的Configuration.java）中，并将其解析，然后通过传入”login”或”logout”参数得到与其相对应的class名。测试代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">	public void testGetClassName() &#123;</span><br><span class="line">		Configuration cfg = new Configuration(&quot;struts.xml&quot;);</span><br><span class="line">		</span><br><span class="line">		String clzName = cfg.getClassName(&quot;login&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;com.coderising.litestruts.LoginAction&quot;, clzName);</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		clzName = cfg.getClassName(&quot;logout&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;com.coderising.litestruts.LogoutAction&quot;, clzName);</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;此时Configuration类和getClassName方法下会出现红线提示错误，这时只需根据下面的提示新建Configuration类和相应的getClassName方法就可以了，建好之后红线就会消失。然后就把新建好的Configuration类的构造函数和getClassName方法写好即可。</p>
+<p>&#160; &#160; &#160; &#160;然后，我们需要根据登陆（login）或登出（logout）以及其操作后得到的提示信息（成功或失败/错误）来确定需要获取哪个jsp页面，具体的测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">	public void testGetResultView()&#123;</span><br><span class="line">	        Configuration cfg = new Configuration(&quot;struts.xml&quot;);</span><br><span class="line">	    </span><br><span class="line">		String jsp = cfg.getResultView(&quot;login&quot;,&quot;success&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/homepage.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">		jsp = cfg.getResultView(&quot;login&quot;,&quot;fail&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/showLogin.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">		jsp = cfg.getResultView(&quot;logout&quot;,&quot;success&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/welcome.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">		jsp = cfg.getResultView(&quot;logout&quot;,&quot;error&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/error.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;同样，我们把红线提示错误的getResultView方法加入到Configuration类中，并把该获取相应jsp的功能代码写好。</p>
+<p>&#160; &#160; &#160; &#160;此时，第二个测试用例完成了，并在相对应的功能代码中完成了相关设计。</p>
+<p>&#160; &#160; &#160; &#160;第二个测试用例完整代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import org.junit.After;</span><br><span class="line">import org.junit.Assert;</span><br><span class="line">import org.junit.Before;</span><br><span class="line">import org.junit.Test;</span><br><span class="line"></span><br><span class="line">public class ConfigurationTest &#123;</span><br><span class="line"></span><br><span class="line">	</span><br><span class="line">	Configuration cfg = new Configuration(&quot;struts.xml&quot;);</span><br><span class="line">	</span><br><span class="line">	@Before</span><br><span class="line">	public void setUp() throws Exception &#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@After</span><br><span class="line">	public void tearDown() throws Exception &#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	public void testGetClassName() &#123;</span><br><span class="line">		</span><br><span class="line">		String clzName = cfg.getClassName(&quot;login&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;com.coderising.litestruts.LoginAction&quot;, clzName);</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		clzName = cfg.getClassName(&quot;logout&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;com.coderising.litestruts.LogoutAction&quot;, clzName);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Test</span><br><span class="line">	public void testGetResultView()&#123;</span><br><span class="line">		String jsp = cfg.getResultView(&quot;login&quot;,&quot;success&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/homepage.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">		jsp = cfg.getResultView(&quot;login&quot;,&quot;fail&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/showLogin.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">		jsp = cfg.getResultView(&quot;logout&quot;,&quot;success&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/welcome.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">		jsp = cfg.getResultView(&quot;logout&quot;,&quot;error&quot;);</span><br><span class="line">		Assert.assertEquals(&quot;/jsp/error.jsp&quot;, jsp);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;第二个测试用例相对应的解析xml，获取相对应的class以及jsp的完整功能代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line">import java.io.InputStream;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">import org.jdom2.Document;</span><br><span class="line">import org.jdom2.Element;</span><br><span class="line">import org.jdom2.JDOMException;</span><br><span class="line">import org.jdom2.input.SAXBuilder;</span><br><span class="line"></span><br><span class="line">public class Configuration &#123;</span><br><span class="line"></span><br><span class="line">	Map&lt;String,ActionConfig&gt; actions = new HashMap&lt;&gt;();</span><br><span class="line">	</span><br><span class="line">	public Configuration(String fileName) &#123;		</span><br><span class="line">		</span><br><span class="line">		String packageName = this.getClass().getPackage().getName();</span><br><span class="line">		</span><br><span class="line">		packageName = packageName.replace(&apos;.&apos;, &apos;/&apos;);</span><br><span class="line">		</span><br><span class="line">		InputStream is = this.getClass().getResourceAsStream(&quot;/&quot; + packageName + &quot;/&quot; + fileName);</span><br><span class="line">		</span><br><span class="line">		parseXML(is);</span><br><span class="line">		</span><br><span class="line">		try &#123;</span><br><span class="line">			is.close();</span><br><span class="line">		&#125; catch (IOException e) &#123;			</span><br><span class="line">			throw new ConfigurationException(e);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private void parseXML(InputStream is)&#123;</span><br><span class="line">		</span><br><span class="line">		 SAXBuilder builder = new SAXBuilder();</span><br><span class="line">		 </span><br><span class="line">		 try &#123;</span><br><span class="line">			 </span><br><span class="line">			Document doc = builder.build(is);</span><br><span class="line">			</span><br><span class="line">			Element root = doc.getRootElement();</span><br><span class="line">			</span><br><span class="line">			for(Element actionElement : root.getChildren(&quot;action&quot;))&#123;</span><br><span class="line">				</span><br><span class="line">				String actionName = actionElement.getAttributeValue(&quot;name&quot;);</span><br><span class="line">				String clzName = actionElement.getAttributeValue(&quot;class&quot;);</span><br><span class="line">				</span><br><span class="line">				ActionConfig ac = new ActionConfig(actionName, clzName);</span><br><span class="line">				</span><br><span class="line">				for(Element resultElement : actionElement.getChildren(&quot;result&quot;))&#123;</span><br><span class="line">					</span><br><span class="line">					String resultName = resultElement.getAttributeValue(&quot;name&quot;);</span><br><span class="line">					String viewName = resultElement.getText().trim();</span><br><span class="line">					</span><br><span class="line">					ac.addViewResult(resultName, viewName);</span><br><span class="line">					</span><br><span class="line">				&#125;</span><br><span class="line">				</span><br><span class="line">				this.actions.put(actionName, ac);</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">		&#125; catch (JDOMException e) &#123;</span><br><span class="line">			throw new ConfigurationException(e);</span><br><span class="line">			</span><br><span class="line">		&#125; catch (IOException e) &#123;</span><br><span class="line">			throw new ConfigurationException(e);</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		 </span><br><span class="line">		 </span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getClassName(String action) &#123;</span><br><span class="line">		ActionConfig ac = this.actions.get(action);</span><br><span class="line">		if(ac == null)&#123;</span><br><span class="line">			return null;</span><br><span class="line">		&#125;</span><br><span class="line">		return ac.getClassName();</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public String getResultView(String action, String resultName) &#123;</span><br><span class="line">		ActionConfig ac = this.actions.get(action);</span><br><span class="line">		if(ac == null)&#123;</span><br><span class="line">			return null;</span><br><span class="line">		&#125;</span><br><span class="line">		return ac.getViewName(resultName);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private static class ActionConfig&#123;</span><br><span class="line">		</span><br><span class="line">		String name;</span><br><span class="line">		String clzName;</span><br><span class="line">		Map&lt;String,String&gt; viewResult = new HashMap&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		</span><br><span class="line">		public ActionConfig(String actionName, String clzName) &#123;</span><br><span class="line">			this.name = actionName;</span><br><span class="line">			this.clzName = clzName;</span><br><span class="line">		&#125;</span><br><span class="line">		public String getClassName()&#123;</span><br><span class="line">			return clzName;</span><br><span class="line">		&#125;</span><br><span class="line">		public void addViewResult(String name, String viewName)&#123;</span><br><span class="line">			viewResult.put(name, viewName);</span><br><span class="line">		&#125;</span><br><span class="line">		public String getViewName(String resultName)&#123;</span><br><span class="line">			return viewResult.get(resultName);</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;此处采用了jdom解析xml文件，需要导入相对应的jar包。</p>
+<p>&#160; &#160; &#160; &#160;相对应的异常处理代码：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.io.IOException;</span><br><span class="line"></span><br><span class="line">import org.jdom2.JDOMException;</span><br><span class="line"></span><br><span class="line">public class ConfigurationException extends RuntimeException &#123;</span><br><span class="line"></span><br><span class="line">	public ConfigurationException(String msg) &#123;</span><br><span class="line">		super(msg);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public ConfigurationException(JDOMException e) &#123;</span><br><span class="line">		super(e);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public ConfigurationException(IOException e) &#123;</span><br><span class="line">		super(e);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;<strong>3.第三个测试用例：通过反射操作对象。</strong></p>
+<p>&#160; &#160; &#160; &#160;首先，我们需要通过反射获得所有的set方法，以用来设置name和password（即登陆时输入的name和password），测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">	public void testGetSetterMethod() throws Exception &#123;</span><br><span class="line">		</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		List&lt;Method&gt; methods = ReflectionUtil.getSetterMethods(clz);</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(2, methods.size());</span><br><span class="line">		</span><br><span class="line">		List&lt;String&gt; expectedNames = new ArrayList&lt;&gt;();</span><br><span class="line">		expectedNames.add(&quot;setName&quot;);</span><br><span class="line">		expectedNames.add(&quot;setPassword&quot;);</span><br><span class="line">		</span><br><span class="line">		Set&lt;String&gt; acctualNames = new HashSet&lt;&gt;();</span><br><span class="line">		for(Method m : methods)&#123;</span><br><span class="line">			acctualNames.add(m.getName());</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		Assert.assertTrue(acctualNames.containsAll(expectedNames));</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;根据提示创建RefletionUtil类和相应的getSetterMethods方法，完成相应的代码设计。</p>
+<p>&#160; &#160; &#160; &#160;反射得到了所有的set方法之后，我们需要调用set方法来设置name和password，并把name=？，password=？这样的key-value对存储到Map中。相关测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">@Test	</span><br><span class="line">	public void testSetParameters() throws Exception&#123;</span><br><span class="line">		</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		Object o = clz.newInstance();</span><br><span class="line">		</span><br><span class="line">		Map&lt;String,String&gt; params = new HashMap&lt;String,String&gt;();</span><br><span class="line">        params.put(&quot;name&quot;,&quot;test&quot;);</span><br><span class="line">        params.put(&quot;password&quot;,&quot;1234&quot;);</span><br><span class="line">		</span><br><span class="line">		ReflectionUtil.setParameters(o,params);</span><br><span class="line">		</span><br><span class="line"></span><br><span class="line">		</span><br><span class="line">		Field f = clz.getDeclaredField(&quot;name&quot;);</span><br><span class="line">		f.setAccessible(true);</span><br><span class="line">		Assert.assertEquals(&quot;test&quot;, f.get(o));</span><br><span class="line">		</span><br><span class="line">		f = clz.getDeclaredField(&quot;password&quot;);</span><br><span class="line">		f.setAccessible(true);</span><br><span class="line">		Assert.assertEquals(&quot;1234&quot;, f.get(o));</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;根据提示创建RefletionUti类和相应的setParameters方法，完成相应的代码设计。</p>
+<p>&#160; &#160; &#160; &#160;反射获取所有的get方法，相关测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">	public void testGetGetterMethod() throws Exception&#123;</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		List&lt;Method&gt; methods = ReflectionUtil.getGetterMethods(clz);</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(3, methods.size());</span><br><span class="line">		</span><br><span class="line">		List&lt;String&gt; expectedNames = new ArrayList&lt;&gt;();</span><br><span class="line">		expectedNames.add(&quot;getMessage&quot;);		</span><br><span class="line">		expectedNames.add(&quot;getName&quot;);</span><br><span class="line">		expectedNames.add(&quot;getPassword&quot;);</span><br><span class="line">		</span><br><span class="line">		Set&lt;String&gt; acctualNames = new HashSet&lt;&gt;();</span><br><span class="line">		for(Method m : methods)&#123;</span><br><span class="line">			acctualNames.add(m.getName());</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		Assert.assertTrue(acctualNames.containsAll(expectedNames));</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;根据提示创建RefletionUti类和相应的getGetterMethods方法，完成相应的代码设计。</p>
+<p>&#160; &#160; &#160; &#160;通过反射获取所有的get方法后，反射调用get方法以获取一一对应的name和password以及message的值，相关测试代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Test</span><br><span class="line">	public void testGetParamters() throws Exception&#123;</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		LoginAction action = (LoginAction)clz.newInstance();</span><br><span class="line">		action.setName(&quot;test&quot;);</span><br><span class="line">		action.setPassword(&quot;123456&quot;);</span><br><span class="line">	</span><br><span class="line">		Map&lt;String,Object&gt; params = ReflectionUtil.getParamterMap(action);</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(3, params.size());</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(null, params.get(&quot;messaage&quot;) );</span><br><span class="line">		Assert.assertEquals(&quot;test&quot;, params.get(&quot;name&quot;) );</span><br><span class="line">		Assert.assertEquals(&quot;123456&quot;, params.get(&quot;password&quot;) );</span><br><span class="line">	&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;根据提示创建RefletionUti类和相应的getParamterMap方法，完成相应的代码设计。</p>
+<p>&#160; &#160; &#160; &#160;第三个测试用例完整代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Field;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.HashSet;</span><br><span class="line">import java.util.List;</span><br><span class="line">import java.util.Map;</span><br><span class="line">import java.util.Set;</span><br><span class="line"></span><br><span class="line">import org.junit.After;</span><br><span class="line">import org.junit.Assert;</span><br><span class="line">import org.junit.Before;</span><br><span class="line">import org.junit.Test;</span><br><span class="line"></span><br><span class="line">public class ReflectionUtilTest &#123;</span><br><span class="line"></span><br><span class="line">	@Before</span><br><span class="line">	public void setUp() throws Exception &#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@After</span><br><span class="line">	public void tearDown() throws Exception &#123;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	@Test</span><br><span class="line">	public void testGetSetterMethod() throws Exception &#123;</span><br><span class="line">		</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		List&lt;Method&gt; methods = ReflectionUtil.getSetterMethods(clz);</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(2, methods.size());</span><br><span class="line">		</span><br><span class="line">		List&lt;String&gt; expectedNames = new ArrayList&lt;&gt;();</span><br><span class="line">		expectedNames.add(&quot;setName&quot;);</span><br><span class="line">		expectedNames.add(&quot;setPassword&quot;);</span><br><span class="line">		</span><br><span class="line">		Set&lt;String&gt; acctualNames = new HashSet&lt;&gt;();</span><br><span class="line">		for(Method m : methods)&#123;</span><br><span class="line">			acctualNames.add(m.getName());</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		Assert.assertTrue(acctualNames.containsAll(expectedNames));</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Test	</span><br><span class="line">	public void testSetParameters() throws Exception&#123;</span><br><span class="line">		</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		Object o = clz.newInstance();</span><br><span class="line">		</span><br><span class="line">		Map&lt;String,String&gt; params = new HashMap&lt;String,String&gt;();</span><br><span class="line">        params.put(&quot;name&quot;,&quot;test&quot;);</span><br><span class="line">        params.put(&quot;password&quot;,&quot;1234&quot;);</span><br><span class="line">		</span><br><span class="line">		ReflectionUtil.setParameters(o,params);</span><br><span class="line">		</span><br><span class="line">		Field f = clz.getDeclaredField(&quot;name&quot;);</span><br><span class="line">		f.setAccessible(true);</span><br><span class="line">		Assert.assertEquals(&quot;test&quot;, f.get(o));</span><br><span class="line">		</span><br><span class="line">		f = clz.getDeclaredField(&quot;password&quot;);</span><br><span class="line">		f.setAccessible(true);</span><br><span class="line">		Assert.assertEquals(&quot;1234&quot;, f.get(o));</span><br><span class="line">	&#125;</span><br><span class="line">	@Test</span><br><span class="line">	public void testGetGetterMethod() throws Exception&#123;</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		List&lt;Method&gt; methods = ReflectionUtil.getGetterMethods(clz);</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(3, methods.size());</span><br><span class="line">		</span><br><span class="line">		List&lt;String&gt; expectedNames = new ArrayList&lt;&gt;();</span><br><span class="line">		expectedNames.add(&quot;getMessage&quot;);		</span><br><span class="line">		expectedNames.add(&quot;getName&quot;);</span><br><span class="line">		expectedNames.add(&quot;getPassword&quot;);</span><br><span class="line">		</span><br><span class="line">		Set&lt;String&gt; acctualNames = new HashSet&lt;&gt;();</span><br><span class="line">		for(Method m : methods)&#123;</span><br><span class="line">			acctualNames.add(m.getName());</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		Assert.assertTrue(acctualNames.containsAll(expectedNames));</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	@Test</span><br><span class="line">	public void testGetParamters() throws Exception&#123;</span><br><span class="line">		String name = &quot;com.coderising.litestruts.LoginAction&quot;;</span><br><span class="line">		Class&lt;?&gt; clz = Class.forName(name);</span><br><span class="line">		LoginAction action = (LoginAction)clz.newInstance();</span><br><span class="line">		action.setName(&quot;test&quot;);</span><br><span class="line">		action.setPassword(&quot;123456&quot;);</span><br><span class="line">		</span><br><span class="line">		Map&lt;String,Object&gt; params = ReflectionUtil.getParamterMap(action);</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(3, params.size());</span><br><span class="line">		</span><br><span class="line">		Assert.assertEquals(null, params.get(&quot;messaage&quot;) );</span><br><span class="line">		Assert.assertEquals(&quot;test&quot;, params.get(&quot;name&quot;) );</span><br><span class="line">		Assert.assertEquals(&quot;123456&quot;, params.get(&quot;password&quot;) );</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;第三个测试用例对应的功能代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.InvocationTargetException;</span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import java.util.ArrayList;</span><br><span class="line">import java.util.HashMap;</span><br><span class="line">import java.util.List;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">public class ReflectionUtil &#123;</span><br><span class="line"></span><br><span class="line">	public static List&lt;Method&gt; getSetterMethods(Class clz) &#123;</span><br><span class="line">		</span><br><span class="line">		return getMethods(clz,&quot;set&quot;);</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static void setParameters(Object o, Map&lt;String, String&gt; params) &#123;</span><br><span class="line">		</span><br><span class="line">		List&lt;Method&gt; methods  =  getSetterMethods(o.getClass());</span><br><span class="line">		</span><br><span class="line">		for(String name : params.keySet() )&#123;</span><br><span class="line">			</span><br><span class="line">			String methodName = &quot;set&quot; + name;</span><br><span class="line">			</span><br><span class="line">			for(Method m: methods)&#123;</span><br><span class="line">				</span><br><span class="line">				if(m.getName().equalsIgnoreCase(methodName))&#123;</span><br><span class="line">					try &#123;</span><br><span class="line">						m.invoke(o, params.get(name));</span><br><span class="line">					&#125; catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) &#123;</span><br><span class="line">						e.printStackTrace();</span><br><span class="line">					&#125;</span><br><span class="line">				&#125;</span><br><span class="line">			&#125;</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	public static List&lt;Method&gt; getGetterMethods(Class&lt;?&gt; clz) &#123;</span><br><span class="line">		return getMethods(clz,&quot;get&quot;);</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	private static List&lt;Method&gt; getMethods(Class&lt;?&gt; clz, String startWithName)&#123;</span><br><span class="line">		</span><br><span class="line">		List&lt;Method&gt; methods = new ArrayList&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		for(Method m : clz.getDeclaredMethods())&#123;</span><br><span class="line">			</span><br><span class="line">			if(m.getName().startsWith(startWithName))&#123;</span><br><span class="line">				</span><br><span class="line">				methods.add(m);</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return methods;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public static Map&lt;String, Object&gt; getParamterMap(Object o) &#123;</span><br><span class="line">		</span><br><span class="line">		Map&lt;String ,Object&gt; params = new HashMap&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		List&lt;Method&gt; methods = getGetterMethods(o.getClass());</span><br><span class="line">		</span><br><span class="line">		for(Method m : methods)&#123;</span><br><span class="line">			</span><br><span class="line">			String methodName = m.getName();</span><br><span class="line">			String name = methodName.replaceFirst(&quot;get&quot;, &quot;&quot;).toLowerCase();</span><br><span class="line">			try &#123;</span><br><span class="line">				Object value = m.invoke(o);</span><br><span class="line">				params.put(name, value);</span><br><span class="line">			&#125; catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) &#123;</span><br><span class="line">				</span><br><span class="line">				e.printStackTrace();</span><br><span class="line">			&#125; </span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return params;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	////////////////////////Backup ///////////////////////////////////</span><br><span class="line">	</span><br><span class="line">	public static List&lt;Method&gt; getGetterMethods_V1(Class&lt;?&gt; clz) &#123;</span><br><span class="line">		</span><br><span class="line">		List&lt;Method&gt; methods = new ArrayList&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		for(Method m : clz.getDeclaredMethods())&#123;</span><br><span class="line">			</span><br><span class="line">			if(m.getName().startsWith(&quot;get&quot;))&#123;</span><br><span class="line">				</span><br><span class="line">				methods.add(m);</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return methods;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	public static List&lt;Method&gt; getSetterMethods_V1(Class clz) &#123;</span><br><span class="line">		</span><br><span class="line">		List&lt;Method&gt; methods = new ArrayList&lt;&gt;();</span><br><span class="line">		</span><br><span class="line">		for(Method m : clz.getDeclaredMethods())&#123;</span><br><span class="line">			</span><br><span class="line">			if(m.getName().startsWith(&quot;set&quot;))&#123;</span><br><span class="line">				</span><br><span class="line">				methods.add(m);</span><br><span class="line">				</span><br><span class="line">			&#125;</span><br><span class="line">			</span><br><span class="line">		&#125;</span><br><span class="line">		</span><br><span class="line">		return methods;</span><br><span class="line">		</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;此处采用了代码重构，getGetterMethods方法和getSetterMethods方法除了”get”和”set”这一点区别外完全一致（如上述代码Backup分界符下面的代码所示，方法名后面加了_V1以防止重名错误），所以采用重构把不同之处（字符串”get”和”set”）以第二个方法参数传入新的getMethods方法中，原来的getGetterMethods方法和getSetterMethods方法只需直接return并新传入字符串方法参数”get”或”set”即可，这样代码变得会更加简洁。</p>
+<p>&#160; &#160; &#160; &#160;最后，我们只需把最开始的核心骨架代码struts.java补全即可，代码如下所示：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">package com.coderising.litestruts;</span><br><span class="line"></span><br><span class="line">import java.lang.reflect.Method;</span><br><span class="line">import java.util.Map;</span><br><span class="line"></span><br><span class="line">public class Struts &#123;</span><br><span class="line"></span><br><span class="line">	private final static Configuration cfg = new Configuration(&quot;struts.xml&quot;);</span><br><span class="line">	</span><br><span class="line">    public static View runAction(String actionName, Map&lt;String,String&gt; parameters) &#123;</span><br><span class="line"></span><br><span class="line">    	String clzName = cfg.getClassName(actionName);</span><br><span class="line">    	</span><br><span class="line">    	if(clzName == null)&#123;</span><br><span class="line">    		return null;</span><br><span class="line">    	&#125;</span><br><span class="line">    	</span><br><span class="line">    	try &#123;</span><br><span class="line">    		</span><br><span class="line">    		Class&lt;?&gt; clz = Class.forName(clzName);    		</span><br><span class="line">			Object action = clz.newInstance();</span><br><span class="line">			</span><br><span class="line">			ReflectionUtil.setParameters(action, parameters);</span><br><span class="line">			</span><br><span class="line">			Method m = clz.getDeclaredMethod(&quot;execute&quot;);			</span><br><span class="line">			String resultName = (String)m.invoke(action);</span><br><span class="line">			</span><br><span class="line">			Map&lt;String,Object&gt; params = ReflectionUtil.getParamterMap(action);	</span><br><span class="line">			String resultView = cfg.getResultView(actionName, resultName);			</span><br><span class="line">			View view = new View();			</span><br><span class="line">			view.setParameters(params);</span><br><span class="line">			view.setJsp(resultView);</span><br><span class="line">			return view;</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">			</span><br><span class="line">		&#125; catch (Exception e) &#123;</span><br><span class="line">			</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">    	return null;</span><br><span class="line">    &#125;    </span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;此时，运行最开始的StrutsTest.java测试文件，通过即完成所有的测试。<br><img src="http://on5axdai5.bkt.clouddn.com/clipboard.png" alt="image"></p>
+<p>&#160; &#160; &#160; &#160;如上图，StrutsTest测试通过，即我们的简易struts就大功告成了。</p>
+<blockquote>
+<p>特别注意：在上述各个模块的单元测试中，每一个方法测试（@Test）在写完相对应的一个方法后，例如：第二个测试用例的第一个测试testGetClassName()，测试通过action的name得到相对应的class，在对应的类Configuration中写完getClassName()方法后，即运行测试已验证该方法是否书写正确。其他的设计都是一样，写一个@Test，写一个方法，运行测试进行验证该方法的正确性，以此来逼近最终要实现的功能。本文直接给出了最后的三个测试用例运行成功的图，但是按一个@Test写一个对应的方法就进行测试验证一步一步走到最后的，需谨记，这才是TDD设计模式的核心思想。</p>
+</blockquote>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/TDD设计模式/" rel="tag"># TDD设计模式</a>
+          
+            <a href="/tags/struts/" rel="tag"># struts</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/03/13/program_how_to_run_up/" rel="next" title="《程序是怎样跑起来的》读书笔记">
+                <i class="fa fa-chevron-left"></i> 《程序是怎样跑起来的》读书笔记
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/04/06/control_framework/" rel="prev" title="Java内部类实例：控制框架（e.g.温室控制系统）">
+                Java内部类实例：控制框架（e.g.温室控制系统） <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/03/21/lite-struts-tdd/" data-title="TDD设计模式写一个lite-struts框架" data-url="http://flowstay.duoshuo.com/2017/03/21/lite-struts-tdd/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/yuanshi.jpg" alt="PigTS">
+          <p class="site-author-name" itemprop="name">PigTS</p>
+           
+              <p class="site-description motion-element" itemprop="description">I was enchanted to meet you</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PigTS</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"flowstay"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>

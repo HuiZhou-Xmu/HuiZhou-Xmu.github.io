@@ -1,0 +1,744 @@
+<!doctype html>
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-Hans">
+<head><meta name="generator" content="Hexo 3.9.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+
+
+<meta http-equiv="Cache-Control" content="no-transform">
+<meta http-equiv="Cache-Control" content="no-siteapp">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  
+  <link href="/lib/fancybox/source/jquery.fancybox.css?v=2.1.5" rel="stylesheet" type="text/css">
+
+
+
+
+  
+  
+  
+  
+
+  
+    
+    
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+    
+    
+    <link href="//fonts.googleapis.com/css?family=Lato:300,300italic,400,400italic,700,700italic&subset=latin,latin-ext" rel="stylesheet" type="text/css">
+  
+
+
+
+
+
+
+<link href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2" rel="stylesheet" type="text/css">
+
+<link href="/css/main.css?v=5.1.0" rel="stylesheet" type="text/css">
+
+
+  <meta name="keywords" content="CNN,">
+
+
+
+
+
+
+
+
+  <link rel="shortcut icon" type="image/x-icon" href="/favicon.ico?v=5.1.0">
+
+
+
+
+
+
+<meta name="description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文主要通过CNN进行花卉的分类，训练结束保存模型，最后通过调用模型，输入花卉的图片通过模型来进行类别的预测。">
+<meta name="keywords" content="CNN">
+<meta property="og:type" content="article">
+<meta property="og:title" content="TensorFlow之CNN图像分类及模型保存与调用">
+<meta property="og:url" content="http://flowstay.duoshuo.com/2017/07/02/cnn_flower_classification/index.html">
+<meta property="og:site_name" content="PigTS&#39;s Blog">
+<meta property="og:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文主要通过CNN进行花卉的分类，训练结束保存模型，最后通过调用模型，输入花卉的图片通过模型来进行类别的预测。">
+<meta property="og:locale" content="zh-Hans">
+<meta property="og:updated_time" content="2017-07-02T06:35:20.613Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="TensorFlow之CNN图像分类及模型保存与调用">
+<meta name="twitter:description" content="&amp;#160; &amp;#160; &amp;#160; &amp;#160;本文主要通过CNN进行花卉的分类，训练结束保存模型，最后通过调用模型，输入花卉的图片通过模型来进行类别的预测。">
+
+
+
+<script type="text/javascript" id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    sidebar: {"position":"left","display":"post","offset":12,"offset_float":0,"b2t":false,"scrollpercent":false},
+    fancybox: true,
+    motion: true,
+    duoshuo: {
+      userId: '0',
+      author: '博主'
+    },
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+
+  <link rel="canonical" href="http://flowstay.duoshuo.com/2017/07/02/cnn_flower_classification/">
+
+
+
+
+
+  <title> TensorFlow之CNN图像分类及模型保存与调用 | PigTS's Blog </title>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-Hans">
+
+  
+
+
+
+
+
+  <script type="text/javascript">
+    var _hmt = _hmt || [];
+    (function() {
+      var hm = document.createElement("script");
+      hm.src = "https://hm.baidu.com/hm.js?b8e6b42ae3e40b727ec4ce6ea21e51d2";
+      var s = document.getElementsByTagName("script")[0];
+      s.parentNode.insertBefore(hm, s);
+    })();
+  </script>
+
+
+
+
+
+
+
+
+
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail ">
+    <div class="headband"></div>
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta ">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">PigTS's Blog</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+      
+        <p class="site-subtitle">Record Learning</p>
+      
+  </div>
+
+  <div class="site-nav-toggle">
+    <button>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+<nav class="site-nav">
+  
+
+  
+    <ul id="menu" class="menu">
+      
+        
+        <li class="menu-item menu-item-home">
+          <a href="/" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-home"></i> <br>
+            
+            首页
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-categories">
+          <a href="/categories" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-th"></i> <br>
+            
+            分类
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-archives">
+          <a href="/archives" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-archive"></i> <br>
+            
+            归档
+          </a>
+        </li>
+      
+        
+        <li class="menu-item menu-item-tags">
+          <a href="/tags" rel="section">
+            
+              <i class="menu-item-icon fa fa-fw fa-tags"></i> <br>
+            
+            标签
+          </a>
+        </li>
+      
+
+      
+    </ul>
+  
+
+  
+</nav>
+
+
+
+ </div>
+    </header>
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  <article class="post post-type-normal " itemscope itemtype="http://schema.org/Article">
+    <link itemprop="mainEntityOfPage" href="http://flowstay.duoshuo.com/2017/07/02/cnn_flower_classification/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="PigTS">
+      <meta itemprop="description" content>
+      <meta itemprop="image" content="/uploads/yuanshi.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="PigTS's Blog">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">
+            
+            
+              
+                TensorFlow之CNN图像分类及模型保存与调用
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+              <time title="创建于" itemprop="dateCreated datePublished" datetime="2017-07-02T13:12:17+08:00">
+                2017-07-02
+              </time>
+            
+
+            
+
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+                  <a href="/categories/TensorFlow/" itemprop="url" rel="index">
+                    <span itemprop="name">TensorFlow</span>
+                  </a>
+                </span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+              <span class="post-comments-count">
+                <span class="post-meta-divider">|</span>
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-comment-o"></i>
+                </span>
+                <a href="/2017/07/02/cnn_flower_classification/#comments" itemprop="discussionUrl">
+                  <span class="post-comments-count ds-thread-count" data-thread-key="2017/07/02/cnn_flower_classification/" itemprop="commentCount"></span>
+                </a>
+              </span>
+            
+          
+
+          
+          
+
+          
+
+          
+
+          
+
+        </div>
+      </header>
+    
+
+
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <p>&#160; &#160; &#160; &#160;本文主要通过CNN进行花卉的分类，训练结束保存模型，最后通过调用模型，输入花卉的图片通过模型来进行类别的预测。<a id="more"></a></p>
+<p>&#160; &#160; &#160; &#160;测试平台：win 10+tensorflow 1.2</p>
+<p>&#160; &#160; &#160; &#160;数据集：<a href="http://download.tensorflow.org/example_images/flower_photos.tgz" target="_blank" rel="noopener">http://download.tensorflow.org/example_images/flower_photos.tgz</a></p>
+<p>&#160; &#160; &#160; &#160;数据集中总共有五种花，分别放在五个文件夹下。</p>
+<p>&#160; &#160; &#160; &#160;<strong>一、CNN训练模型</strong></p>
+<p>&#160; &#160; &#160; &#160;模型尺寸分析：卷积层全都采用了补0，所以经过卷积层长和宽不变，只有深度加深。池化层全都没有补0，所以经过池化层长和宽均减小，深度不变。</p>
+<p>&#160; &#160; &#160; &#160;模型尺寸变化：100×100×3-&gt;100×100×32-&gt;50×50×32-&gt;50×50×64-&gt;25×25×64-&gt;25×25×128-&gt;12×12×128-&gt;12×12×128-&gt;6×6×128</p>
+<p>&#160; &#160; &#160; &#160;CNN训练代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">from skimage import io,transform</span><br><span class="line">import glob</span><br><span class="line">import os</span><br><span class="line">import tensorflow as tf</span><br><span class="line">import numpy as np</span><br><span class="line">import time</span><br><span class="line"></span><br><span class="line">#数据集地址</span><br><span class="line">path=&apos;E:/data/datasets/flower_photos/&apos;</span><br><span class="line">#模型保存地址</span><br><span class="line">model_path=&apos;E:/data/model/flower/model.ckpt&apos;</span><br><span class="line"></span><br><span class="line">#将所有的图片resize成100*100</span><br><span class="line">w=100</span><br><span class="line">h=100</span><br><span class="line">c=3</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#读取图片</span><br><span class="line">def read_img(path):</span><br><span class="line">    cate=[path+x for x in os.listdir(path) if os.path.isdir(path+x)]</span><br><span class="line">    imgs=[]</span><br><span class="line">    labels=[]</span><br><span class="line">    for idx,folder in enumerate(cate):</span><br><span class="line">        for im in glob.glob(folder+&apos;/*.jpg&apos;):</span><br><span class="line">            print(&apos;reading the images:%s&apos;%(im))</span><br><span class="line">            img=io.imread(im)</span><br><span class="line">            img=transform.resize(img,(w,h))</span><br><span class="line">            imgs.append(img)</span><br><span class="line">            labels.append(idx)</span><br><span class="line">    return np.asarray(imgs,np.float32),np.asarray(labels,np.int32)</span><br><span class="line">data,label=read_img(path)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#打乱顺序</span><br><span class="line">num_example=data.shape[0]</span><br><span class="line">arr=np.arange(num_example)</span><br><span class="line">np.random.shuffle(arr)</span><br><span class="line">data=data[arr]</span><br><span class="line">label=label[arr]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#将所有数据分为训练集和验证集</span><br><span class="line">ratio=0.8</span><br><span class="line">s=np.int(num_example*ratio)</span><br><span class="line">x_train=data[:s]</span><br><span class="line">y_train=label[:s]</span><br><span class="line">x_val=data[s:]</span><br><span class="line">y_val=label[s:]</span><br><span class="line"></span><br><span class="line">#-----------------构建网络----------------------</span><br><span class="line">#占位符</span><br><span class="line">x=tf.placeholder(tf.float32,shape=[None,w,h,c],name=&apos;x&apos;)</span><br><span class="line">y_=tf.placeholder(tf.int32,shape=[None,],name=&apos;y_&apos;)</span><br><span class="line"></span><br><span class="line">def inference(input_tensor, train, regularizer):</span><br><span class="line">    with tf.variable_scope(&apos;layer1-conv1&apos;):</span><br><span class="line">        conv1_weights = tf.get_variable(&quot;weight&quot;,[5,5,3,32],initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        conv1_biases = tf.get_variable(&quot;bias&quot;, [32], initializer=tf.constant_initializer(0.0))</span><br><span class="line">        conv1 = tf.nn.conv2d(input_tensor, conv1_weights, strides=[1, 1, 1, 1], padding=&apos;SAME&apos;)</span><br><span class="line">        relu1 = tf.nn.relu(tf.nn.bias_add(conv1, conv1_biases))</span><br><span class="line"></span><br><span class="line">    with tf.name_scope(&quot;layer2-pool1&quot;):</span><br><span class="line">        pool1 = tf.nn.max_pool(relu1, ksize = [1,2,2,1],strides=[1,2,2,1],padding=&quot;VALID&quot;)</span><br><span class="line"></span><br><span class="line">    with tf.variable_scope(&quot;layer3-conv2&quot;):</span><br><span class="line">        conv2_weights = tf.get_variable(&quot;weight&quot;,[5,5,32,64],initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        conv2_biases = tf.get_variable(&quot;bias&quot;, [64], initializer=tf.constant_initializer(0.0))</span><br><span class="line">        conv2 = tf.nn.conv2d(pool1, conv2_weights, strides=[1, 1, 1, 1], padding=&apos;SAME&apos;)</span><br><span class="line">        relu2 = tf.nn.relu(tf.nn.bias_add(conv2, conv2_biases))</span><br><span class="line"></span><br><span class="line">    with tf.name_scope(&quot;layer4-pool2&quot;):</span><br><span class="line">        pool2 = tf.nn.max_pool(relu2, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding=&apos;VALID&apos;)</span><br><span class="line">      </span><br><span class="line">    with tf.variable_scope(&quot;layer5-conv3&quot;):</span><br><span class="line">        conv3_weights = tf.get_variable(&quot;weight&quot;,[3,3,64,128],initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        conv3_biases = tf.get_variable(&quot;bias&quot;, [128], initializer=tf.constant_initializer(0.0))</span><br><span class="line">        conv3 = tf.nn.conv2d(pool2, conv3_weights, strides=[1, 1, 1, 1], padding=&apos;SAME&apos;)</span><br><span class="line">        relu3 = tf.nn.relu(tf.nn.bias_add(conv3, conv3_biases))</span><br><span class="line"></span><br><span class="line">    with tf.name_scope(&quot;layer6-pool3&quot;):</span><br><span class="line">        pool3 = tf.nn.max_pool(relu3, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding=&apos;VALID&apos;)</span><br><span class="line">        </span><br><span class="line">    with tf.variable_scope(&quot;layer7-conv4&quot;):</span><br><span class="line">        conv4_weights = tf.get_variable(&quot;weight&quot;,[3,3,128,128],initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        conv4_biases = tf.get_variable(&quot;bias&quot;, [128], initializer=tf.constant_initializer(0.0))</span><br><span class="line">        conv4 = tf.nn.conv2d(pool3, conv4_weights, strides=[1, 1, 1, 1], padding=&apos;SAME&apos;)</span><br><span class="line">        relu4 = tf.nn.relu(tf.nn.bias_add(conv4, conv4_biases))</span><br><span class="line"></span><br><span class="line">    with tf.name_scope(&quot;layer8-pool4&quot;):</span><br><span class="line">        pool4 = tf.nn.max_pool(relu4, ksize=[1, 2, 2, 1], strides=[1, 2, 2, 1], padding=&apos;VALID&apos;)</span><br><span class="line">        nodes = 6*6*128</span><br><span class="line">        reshaped = tf.reshape(pool4,[-1,nodes])</span><br><span class="line">        </span><br><span class="line">    with tf.variable_scope(&apos;layer9-fc1&apos;):</span><br><span class="line">        fc1_weights = tf.get_variable(&quot;weight&quot;, [nodes, 1024],</span><br><span class="line">                                      initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        if regularizer != None: tf.add_to_collection(&apos;losses&apos;, regularizer(fc1_weights))</span><br><span class="line">        fc1_biases = tf.get_variable(&quot;bias&quot;, [1024], initializer=tf.constant_initializer(0.1))</span><br><span class="line"></span><br><span class="line">        fc1 = tf.nn.relu(tf.matmul(reshaped, fc1_weights) + fc1_biases)</span><br><span class="line">        if train: fc1 = tf.nn.dropout(fc1, 0.5)</span><br><span class="line">            </span><br><span class="line">    with tf.variable_scope(&apos;layer10-fc2&apos;):</span><br><span class="line">        fc2_weights = tf.get_variable(&quot;weight&quot;, [1024, 512],</span><br><span class="line">                                      initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        if regularizer != None: tf.add_to_collection(&apos;losses&apos;, regularizer(fc2_weights))</span><br><span class="line">        fc2_biases = tf.get_variable(&quot;bias&quot;, [512], initializer=tf.constant_initializer(0.1))</span><br><span class="line"></span><br><span class="line">        fc2 = tf.nn.relu(tf.matmul(fc1, fc2_weights) + fc2_biases)</span><br><span class="line">        if train: fc2 = tf.nn.dropout(fc2, 0.5)</span><br><span class="line"></span><br><span class="line">    with tf.variable_scope(&apos;layer11-fc3&apos;):</span><br><span class="line">        fc3_weights = tf.get_variable(&quot;weight&quot;, [512, 5],</span><br><span class="line">                                      initializer=tf.truncated_normal_initializer(stddev=0.1))</span><br><span class="line">        if regularizer != None: tf.add_to_collection(&apos;losses&apos;, regularizer(fc3_weights))</span><br><span class="line">        fc3_biases = tf.get_variable(&quot;bias&quot;, [5], initializer=tf.constant_initializer(0.1))</span><br><span class="line">        logit = tf.matmul(fc2, fc3_weights) + fc3_biases</span><br><span class="line"></span><br><span class="line">    return logit</span><br><span class="line"></span><br><span class="line">#---------------------------网络结束---------------------------</span><br><span class="line">regularizer = tf.contrib.layers.l2_regularizer(0.0001)</span><br><span class="line">logits = inference(x,False,regularizer)</span><br><span class="line"></span><br><span class="line">#(小处理)将logits乘以1赋值给logits_eval，定义name，方便在后续调用模型时通过tensor名字调用输出tensor</span><br><span class="line">b = tf.constant(value=1,dtype=tf.float32)</span><br><span class="line">logits_eval = tf.multiply(logits,b,name=&apos;logits_eval&apos;) </span><br><span class="line"></span><br><span class="line">loss=tf.nn.sparse_softmax_cross_entropy_with_logits(logits=logits, labels=y_)</span><br><span class="line">train_op=tf.train.AdamOptimizer(learning_rate=0.001).minimize(loss)</span><br><span class="line">correct_prediction = tf.equal(tf.cast(tf.argmax(logits,1),tf.int32), y_)    </span><br><span class="line">acc= tf.reduce_mean(tf.cast(correct_prediction, tf.float32))</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#定义一个函数，按批次取数据</span><br><span class="line">def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):</span><br><span class="line">    assert len(inputs) == len(targets)</span><br><span class="line">    if shuffle:</span><br><span class="line">        indices = np.arange(len(inputs))</span><br><span class="line">        np.random.shuffle(indices)</span><br><span class="line">    for start_idx in range(0, len(inputs) - batch_size + 1, batch_size):</span><br><span class="line">        if shuffle:</span><br><span class="line">            excerpt = indices[start_idx:start_idx + batch_size]</span><br><span class="line">        else:</span><br><span class="line">            excerpt = slice(start_idx, start_idx + batch_size)</span><br><span class="line">        yield inputs[excerpt], targets[excerpt]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">#训练和测试数据，可将n_epoch设置更大一些</span><br><span class="line"></span><br><span class="line">n_epoch=10                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           </span><br><span class="line">batch_size=64</span><br><span class="line">saver=tf.train.Saver()</span><br><span class="line">sess=tf.Session()  </span><br><span class="line">sess.run(tf.global_variables_initializer())</span><br><span class="line">for epoch in range(n_epoch):</span><br><span class="line">    start_time = time.time()</span><br><span class="line">    </span><br><span class="line">    #training</span><br><span class="line">    train_loss, train_acc, n_batch = 0, 0, 0</span><br><span class="line">    for x_train_a, y_train_a in minibatches(x_train, y_train, batch_size, shuffle=True):</span><br><span class="line">        _,err,ac=sess.run([train_op,loss,acc], feed_dict=&#123;x: x_train_a, y_: y_train_a&#125;)</span><br><span class="line">        train_loss += err; train_acc += ac; n_batch += 1</span><br><span class="line">    print(&quot;   train loss: %f&quot; % (np.sum(train_loss)/ n_batch))</span><br><span class="line">    print(&quot;   train acc: %f&quot; % (np.sum(train_acc)/ n_batch))</span><br><span class="line">    </span><br><span class="line">    #validation</span><br><span class="line">    val_loss, val_acc, n_batch = 0, 0, 0</span><br><span class="line">    for x_val_a, y_val_a in minibatches(x_val, y_val, batch_size, shuffle=False):</span><br><span class="line">        err, ac = sess.run([loss,acc], feed_dict=&#123;x: x_val_a, y_: y_val_a&#125;)</span><br><span class="line">        val_loss += err; val_acc += ac; n_batch += 1</span><br><span class="line">    print(&quot;   validation loss: %f&quot; % (np.sum(val_loss)/ n_batch))</span><br><span class="line">    print(&quot;   validation acc: %f&quot; % (np.sum(val_acc)/ n_batch))</span><br><span class="line">saver.save(sess,model_path)</span><br><span class="line">sess.close()</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;<strong>二、调用模型进行预测</strong></p>
+<p>&#160; &#160; &#160; &#160;调用模型进行花卉的预测，代码如下：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">from skimage import io,transform</span><br><span class="line">import tensorflow as tf</span><br><span class="line">import numpy as np</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">path1 = &quot;E:/data/datasets/flower_photos/daisy/5547758_eea9edfd54_n.jpg&quot;</span><br><span class="line">path2 = &quot;E:/data/datasets/flower_photos/dandelion/7355522_b66e5d3078_m.jpg&quot;</span><br><span class="line">path3 = &quot;E:/data/datasets/flower_photos/roses/394990940_7af082cf8d_n.jpg&quot;</span><br><span class="line">path4 = &quot;E:/data/datasets/flower_photos/sunflowers/6953297_8576bf4ea3.jpg&quot;</span><br><span class="line">path5 = &quot;E:/data/datasets/flower_photos/tulips/10791227_7168491604.jpg&quot;</span><br><span class="line"></span><br><span class="line">flower_dict = &#123;0:&apos;dasiy&apos;,1:&apos;dandelion&apos;,2:&apos;roses&apos;,3:&apos;sunflowers&apos;,4:&apos;tulips&apos;&#125;</span><br><span class="line"></span><br><span class="line">w=100</span><br><span class="line">h=100</span><br><span class="line">c=3</span><br><span class="line"></span><br><span class="line">def read_one_image(path):</span><br><span class="line">    img = io.imread(path)</span><br><span class="line">    img = transform.resize(img,(w,h))</span><br><span class="line">    return np.asarray(img)</span><br><span class="line"></span><br><span class="line">with tf.Session() as sess:</span><br><span class="line">    data = []</span><br><span class="line">    data1 = read_one_image(path1)</span><br><span class="line">    data2 = read_one_image(path2)</span><br><span class="line">    data3 = read_one_image(path3)</span><br><span class="line">    data4 = read_one_image(path4)</span><br><span class="line">    data5 = read_one_image(path5)</span><br><span class="line">    data.append(data1)</span><br><span class="line">    data.append(data2)</span><br><span class="line">    data.append(data3)</span><br><span class="line">    data.append(data4)</span><br><span class="line">    data.append(data5)</span><br><span class="line"></span><br><span class="line">    saver = tf.train.import_meta_graph(&apos;E:/data/model/flower/model.ckpt.meta&apos;)</span><br><span class="line">    saver.restore(sess,tf.train.latest_checkpoint(&apos;E:/data/model/flower/&apos;))</span><br><span class="line">    </span><br><span class="line">    graph = tf.get_default_graph()</span><br><span class="line">    x = graph.get_tensor_by_name(&quot;x:0&quot;)</span><br><span class="line">    feed_dict = &#123;x:data&#125;</span><br><span class="line">    </span><br><span class="line">    logits = graph.get_tensor_by_name(&quot;logits_eval:0&quot;)</span><br><span class="line">    </span><br><span class="line">    classification_result = sess.run(logits,feed_dict)</span><br><span class="line">    </span><br><span class="line">    #打印出预测矩阵</span><br><span class="line">    print(classification_result)</span><br><span class="line">    #打印出预测矩阵每一行最大值的索引</span><br><span class="line">    print(tf.argmax(classification_result,1).eval())</span><br><span class="line">    #根据索引通过字典对应花的分类</span><br><span class="line">    output = []</span><br><span class="line">    output = tf.argmax(classification_result,1).eval()</span><br><span class="line">    for i in range(len(output)):</span><br><span class="line">        print(&quot;第&quot;,i+1,&quot;朵花预测:&quot;+flower_dict[output[i]])</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;运行结果：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">[[  5.76620245   3.18228579  -3.89464641  -2.81310582   1.40294015]</span><br><span class="line"> [ -1.01490593   3.55570269  -2.76053429   2.93104005  -3.47138596]</span><br><span class="line"> [ -8.05292606  -7.26499033  11.70479774   0.59627819   2.15948296]</span><br><span class="line"> [ -5.12940931   2.18423128  -3.33257103   9.0591135    5.03963232]</span><br><span class="line"> [ -4.25288343  -0.95963973  -2.33347392   1.54485476   5.76069307]]</span><br><span class="line">[0 1 2 3 4]</span><br><span class="line">第 1 朵花预测:dasiy</span><br><span class="line">第 2 朵花预测:dandelion</span><br><span class="line">第 3 朵花预测:roses</span><br><span class="line">第 4 朵花预测:sunflowers</span><br><span class="line">第 5 朵花预测:tulips</span><br></pre></td></tr></table></figure>
+
+<p>&#160; &#160; &#160; &#160;预测结果和调用模型代码中的五个路径相比较是完全准确的。</p>
+<p>&#160; &#160; &#160; &#160;本文的模型对于花卉的分类准确率大概在70%左右，采用迁移学习调用Inception-v3模型对本文中的花卉数据集分类准确率在95%左右。主要的原因在于本文的CNN模型较于简单，而且花卉数据集本身就比mnist手写数字数据集分类难度就要大一点，同样的模型在mnist手写数字的识别上准确率要比花卉数据集准确率高不少。</p>
+<p>&#160; &#160; &#160; &#160;本文的CNN模型完全可以通过增大模型复杂度或者改参数调试以及对图像进行预处理来提高准确率，但本文只是想记录一下最近的学习，这已经足够了。</p>
+<p>&#160; &#160; &#160; &#160;参考博客：<a href="http://www.cnblogs.com/denny402/p/6931338.html" target="_blank" rel="noopener">http://www.cnblogs.com/denny402/p/6931338.html</a></p>
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <div>
+      
+        
+
+      
+    </div>
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/CNN/" rel="tag"># CNN</a>
+          
+        </div>
+      
+
+      
+        
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2017/04/25/stack_reverse/" rel="next" title="栈的逆置">
+                <i class="fa fa-chevron-left"></i> 栈的逆置
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2017/07/04/video_to_image/" rel="prev" title="OpenCV之从视频获取每一帧图像">
+                OpenCV之从视频获取每一帧图像 <i class="fa fa-chevron-right"></i>
+              </a>
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </article>
+
+
+
+    <div class="post-spread">
+      
+    </div>
+  </div>
+
+
+          </div>
+          
+
+
+          
+  <div class="comments" id="comments">
+    
+      <div class="ds-thread" data-thread-key="2017/07/02/cnn_flower_classification/" data-title="TensorFlow之CNN图像分类及模型保存与调用" data-url="http://flowstay.duoshuo.com/2017/07/02/cnn_flower_classification/">
+      </div>
+    
+  </div>
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    <div class="sidebar-inner">
+
+      
+
+      
+
+      <section class="site-overview sidebar-panel sidebar-panel-active">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+          <img class="site-author-image" itemprop="image" src="/uploads/yuanshi.jpg" alt="PigTS">
+          <p class="site-author-name" itemprop="name">PigTS</p>
+           
+              <p class="site-description motion-element" itemprop="description">I was enchanted to meet you</p>
+          
+        </div>
+        <nav class="site-state motion-element">
+
+          
+            <div class="site-state-item site-state-posts">
+              <a href="/archives">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">日志</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-categories">
+              <a href="/categories/index.html">
+                <span class="site-state-item-count">9</span>
+                <span class="site-state-item-name">分类</span>
+              </a>
+            </div>
+          
+
+          
+            
+            
+            <div class="site-state-item site-state-tags">
+              <a href="/tags/index.html">
+                <span class="site-state-item-count">16</span>
+                <span class="site-state-item-name">标签</span>
+              </a>
+            </div>
+          
+
+        </nav>
+
+        
+
+        <div class="links-of-author motion-element">
+          
+        </div>
+
+        
+        
+
+        
+        
+
+        
+
+
+      </section>
+
+      
+
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">
+  
+  &copy; 
+  <span itemprop="copyrightYear">2019</span>
+  <span class="with-love">
+    <i class="fa fa-heart"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">PigTS</span>
+</div>
+
+
+<div class="powered-by">
+  由 <a class="theme-link" href="https://hexo.io">Hexo</a> 强力驱动
+</div>
+
+<div class="theme-info">
+  主题 -
+  <a class="theme-link" href="https://github.com/iissnan/hexo-theme-next">
+    NexT.Pisces
+  </a>
+</div>
+
+
+        
+
+        
+      </div>
+    </footer>
+
+    
+      <div class="back-to-top">
+        <i class="fa fa-arrow-up"></i>
+        
+      </div>
+    
+
+  </div>
+
+  
+
+<script type="text/javascript">
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+  
+  <script type="text/javascript" src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script type="text/javascript" src="/lib/fastclick/lib/fastclick.min.js?v=1.0.6"></script>
+
+  
+  <script type="text/javascript" src="/lib/jquery_lazyload/jquery.lazyload.js?v=1.9.7"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+  
+  <script type="text/javascript" src="/lib/fancybox/source/jquery.fancybox.pack.js?v=2.1.5"></script>
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/utils.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/motion.js?v=5.1.0"></script>
+
+
+
+  
+  
+
+
+  <script type="text/javascript" src="/js/src/affix.js?v=5.1.0"></script>
+
+  <script type="text/javascript" src="/js/src/schemes/pisces.js?v=5.1.0"></script>
+
+
+
+  
+  <script type="text/javascript" src="/js/src/scrollspy.js?v=5.1.0"></script>
+<script type="text/javascript" src="/js/src/post-details.js?v=5.1.0"></script>
+
+
+
+  
+
+
+  <script type="text/javascript" src="/js/src/bootstrap.js?v=5.1.0"></script>
+
+
+
+  
+
+  
+    
+  
+
+  <script type="text/javascript">
+    var duoshuoQuery = {short_name:"flowstay"};
+    (function() {
+      var ds = document.createElement('script');
+      ds.type = 'text/javascript';ds.async = true;
+      ds.id = 'duoshuo-script';
+      ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+      ds.charset = 'UTF-8';
+      (document.getElementsByTagName('head')[0]
+      || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+  </script>
+
+  
+    
+    
+    <script src="/lib/ua-parser-js/dist/ua-parser.min.js?v=0.7.9"></script>
+    <script src="/js/src/hook-duoshuo.js"></script>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+</body>
+</html>
